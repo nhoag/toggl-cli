@@ -1,0 +1,11 @@
+#!/usr/bin/env php
+<?php
+
+require __DIR__.'/../vendor/autoload.php';
+
+$app = new \TogglCli\Console\Application();
+$app->add(new \TogglCli\Console\Command\AddEntryCommand);
+$app->add(new \TogglCli\Console\Command\GetProjectsCommand);
+$app->add(new \TogglCli\Console\Command\GetTagsCommand);
+$app->add(new \TogglCli\Console\Command\GetWorkspacesCommand);
+$app->run();
