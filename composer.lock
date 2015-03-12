@@ -4,15 +4,21 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ded28afb2597522a08bb743760f42d86",
+    "hash": "1334c4b7e78e6afb320de98747125dfd",
     "packages": [
         {
             "name": "ajt/guzzle-toggl",
-            "version": "dev-master",
+            "version": "v0.10",
             "source": {
                 "type": "git",
-                "url": "https://github.com/nhoag/guzzle-toggl",
-                "reference": "1992c3753cb0c95bded696a4b256162a7a4ba0c8"
+                "url": "https://github.com/arendjantetteroo/guzzle-toggl.git",
+                "reference": "da871d58814563923da993c9680a285957882cd0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/arendjantetteroo/guzzle-toggl/zipball/da871d58814563923da993c9680a285957882cd0",
+                "reference": "da871d58814563923da993c9680a285957882cd0",
+                "shasum": ""
             },
             "require": {
                 "guzzle/guzzle": "~3.3"
@@ -28,6 +34,7 @@
                     "AJT": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -40,12 +47,12 @@
             "description": "Toggl API client written on top of Guzzle PHP.",
             "homepage": "http://github.com/arendjantetteroo/guzzle-toggl",
             "keywords": [
+                "Guzzle",
                 "ajt",
                 "api",
-                "guzzle",
                 "toggl"
             ],
-            "time": "2015-03-07 17:24:04"
+            "time": "2015-03-10 14:44:15"
         },
         {
             "name": "guzzle/guzzle",
@@ -1150,9 +1157,7 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "ajt/guzzle-toggl": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

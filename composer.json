@@ -1,10 +1,4 @@
 {
-    "repositories": [
-        {
-            "type": "git",
-            "url": "https://github.com/nhoag/guzzle-toggl"
-        }
-    ],
     "require": {
         "symfony/console": "~2.6",
         "symfony/process": "~2.6",
@@ -18,7 +12,7 @@
         "symfony/class-loader": "~2.6",
         "symfony/var-dumper": "~2.6",
         "symfony/finder": "~2.6",
-        "ajt/guzzle-toggl": "dev-master"
+        "ajt/guzzle-toggl": "0.10.*"
     },
     "autoload": {
         "psr-0": { "TogglCli\\": "src/" }
