@@ -5,6 +5,7 @@ namespace TogglCli\Console\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use AJT\Toggl\TogglClient;
 
 class GetTagsCommand extends TogglCliBaseCommand
@@ -48,7 +49,8 @@ class GetTagsCommand extends TogglCliBaseCommand
             foreach($tags as $tag){
                 if ($name) {
                     if (preg_match("/$name/i", $tag['name'])) {
-                        $output->writeln($tag['name']);
+                        $string = $this->highlight($tag['name'], $name);
+                        $output->writeln($string);
                     }
                 } else {
                     $output->writeln($tag['name']);

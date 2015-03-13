@@ -126,4 +126,34 @@ class TogglCliBaseCommand extends Command
             $output->writeln(sprintf("<info>%s</info>", $message));
         }
     }
+
+    protected function highlight($string, $hilite, $style = 'fg=white;bg=magenta')
+    {
+        $regex = "/{$hilite}/i";
+        preg_match_all($regex, $string, $matches);
+        $unmatch = preg_split($regex, $string, NULL, PREG_SPLIT_OFFSET_CAPTURE);
+        $rebuild = '';
+        $open = "<{$style}>";
+        $close = "</{$style}>";
+        foreach ($unmatch as $i) {
+            if (strlen($rebuild) == $i[1]) {
+                $rebuild .= $i[0];
+            } elseif (strlen($rebuild) < $i[1]) {
+                $rebuild .= $open;
+                while (strlen($rebuild) - strlen($open) < $i[1]) {
+                    $rebuild .= array_shift($matches[0]);
+                }
+                $rebuild .= $close . $i[0];
+            } else {
+                $rebuild .= $open;
+                foreach ($matches as $x) {
+                    foreach ($x as $y) {
+                        $rebuild .= $y;
+                    }
+                }
+                $rebuild .= $close . $i[0];
+            }
+        }
+        return $rebuild;
+    }
 }

@@ -32,10 +32,11 @@ class GetWorkspacesCommand extends TogglCliBaseCommand
         foreach($workspaces as $workspace){
             if ($name) {
                 if (preg_match("/$name/i", $workspace['name'])) {
-                    $output->writeln($workspace['id'] . ' - ' . $workspace['name']);
+                    $string = $this->highlight($workspace['name'], $name);
+                    $output->writeln('<info>' . $workspace['id'] . '</info>' . ' - ' . $string);
                 }
             } else {
-                $output->writeln($workspace['id'] . ' - ' . $workspace['name']);
+                $output->writeln('<info>' . $workspace['id'] . '</info>' . ' - ' . $workspace['name']);
             }
         }
     }

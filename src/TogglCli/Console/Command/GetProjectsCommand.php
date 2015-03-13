@@ -29,15 +29,16 @@ class GetProjectsCommand extends TogglCliBaseCommand
         $toggl_client = TogglClient::factory(array('api_key' => $this->config['api_token']));
         $workspaces = $toggl_client->getWorkspaces(array());
 
-        foreach($workspaces as $workspace){
+        foreach ($workspaces as $workspace) {
             $projects = $toggl_client->getProjects(array('id' => $workspace['id']));
-            foreach($projects as $project){
+            foreach ($projects as $project) {
                 if ($name) {
                     if (preg_match("/$name/i", $project['name'])) {
-                        $output->writeln($project['id'] . ' - ' . $project['name']);
+                        $string = $this->highlight($project['name'], $name);
+                        $output->writeln('<info>' . $project['id'] . '</info>' . ' - ' . $string);
                     }
                 } else {
-                    $output->writeln($project['id'] . ' - ' . $project['name']);
+                    $output->writeln('<info>' . $project['id'] . '</info>' . ' - ' . $project['name']);
                 }
             }
         }
