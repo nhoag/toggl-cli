@@ -56,7 +56,7 @@ class AddEntryCommand extends TogglCliBaseCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $project_id = $input->getArgument('project_id');
-        $billable = $input->getArgument('billable');
+        $billable = $input->getOption('billable');
         $description = $input->getOption('description');
         $duration = $input->getOption('duration');
         $start = $input->getOption('start');
