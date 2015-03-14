@@ -17,15 +17,15 @@ class GetTagsCommand extends TogglCliBaseCommand
             ->setDescription('Get Toggl Tags')
             ->addOption(
                 'workspace_id',
-                NULL,
+                'w',
                 InputOption::VALUE_OPTIONAL,
-                'Specify workspace'
+                'Specify workspace ID'
             )
             ->addOption(
-                'name',
-                NULL,
+                'filter',
+                'f',
                 InputOption::VALUE_OPTIONAL,
-                'Filter by tag name fragment'
+                'Filter tags by string'
             )
         ;
     }
@@ -33,7 +33,7 @@ class GetTagsCommand extends TogglCliBaseCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $wid = $input->getOption('workspace_id');
-        $name = $input->getOption('name');
+        $filter = $input->getOption('filter');
         $toggl_client = TogglClient::factory(array('api_key' => $this->config['api_token']));
         if ($wid) {
             $workspaces = $toggl_client->getWorkspaces(array($wid));
@@ -41,21 +41,37 @@ class GetTagsCommand extends TogglCliBaseCommand
             $workspaces = $toggl_client->getWorkspaces(array());
         }
 
-        foreach($workspaces as $workspace){
-            $tags = $toggl_client->getWorkspaceTags(array('id' => $workspace['id']));
-            usort($tags, function ($a, $b) {
-                return strcmp($a['name'], $b['name']);
-            });
-            foreach($tags as $tag){
-                if ($name) {
-                    if (preg_match("/$name/i", $tag['name'])) {
-                        $string = $this->highlight($tag['name'], $name);
-                        $output->writeln($string);
+        if (!empty($workspaces)) {
+            $output_indicator = false;
+            $tag_indicator = false;
+            foreach($workspaces as $workspace){
+                $tags = $toggl_client->getWorkspaceTags(array('id' => $workspace['id']));
+                if (!empty($tags)) {
+                    $tag_indicator = true;
+                    usort($tags, function ($a, $b) {
+                        return strcmp($a['name'], $b['name']);
+                    });
+                    foreach($tags as $tag){
+                        if ($filter) {
+                            if (preg_match("/$filter/i", $tag['name'])) {
+                                $output_indicator = true;
+                                $string = $this->highlight($tag['name'], $filter);
+                                $output->writeln($string);
+                            }
+                        } elseif ($tag) {
+                            $output_indicator = true;
+                            $output->writeln($tag['name']);
+                        }
                     }
-                } else {
-                    $output->writeln($tag['name']);
                 }
             }
+            if (!$tag_indicator) {
+                $output->writeln('<comment>No tags found</comment>');
+            } elseif (!$output_indicator) {
+                $output->writeln("<comment>No tags found with name '{$filter}'</comment>");
+            }
+        } else {
+            $output->writeln('<comment>No workspaces found</comment>');
         }
     }
 }

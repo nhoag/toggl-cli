@@ -15,29 +15,39 @@ class GetWorkspacesCommand extends TogglCliBaseCommand
             ->setName('get:workspaces')
             ->setDescription('Get Toggl Workspaces')
             ->addOption(
-                'name',
-                NULL,
+                'filter',
+                'f',
                 InputOption::VALUE_OPTIONAL,
-                'Filter workspaces by name fragment'
+                'Filter workspaces by string'
             )
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $name = $input->getOption('name');
+        $filter = $input->getOption('filter');
         $toggl_client = TogglClient::factory(array('api_key' => $this->config['api_token']));
         $workspaces = $toggl_client->getWorkspaces(array());
 
-        foreach($workspaces as $workspace){
-            if ($name) {
-                if (preg_match("/$name/i", $workspace['name'])) {
-                    $string = $this->highlight($workspace['name'], $name);
-                    $output->writeln('<info>' . $workspace['id'] . '</info>' . ' - ' . $string);
+        if (!empty($workspaces)) {
+            $workspace_indicator = false;
+            foreach($workspaces as $workspace) {
+                if ($filter) {
+                    if (preg_match("/$filter/i", $workspace['name'])) {
+                        $workspace_indicator = true;
+                        $string = $this->highlight($workspace['name'], $filter);
+                        $output->writeln('<info>' . $workspace['id'] . '</info>' . ' - ' . $string);
+                    }
+                } elseif ($workspace) {
+                    $workspace_indicator = true;
+                    $output->writeln('<info>' . $workspace['id'] . '</info>' . ' - ' . $workspace['name']);
                 }
-            } else {
-                $output->writeln('<info>' . $workspace['id'] . '</info>' . ' - ' . $workspace['name']);
             }
+            if (!$workspace_indicator) {
+                $output->writeln("<comment>No workspaces found with name '{$filter}'</comment>");
+            }
+        } else {
+            $output->writeln('<comment>No workspaces found</comment>');
         }
     }
 }
