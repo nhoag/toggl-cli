@@ -21,26 +21,32 @@ class AddEntryCommand extends TogglCliBaseCommand
                 'Name of entry'
             )
             ->addOption(
+                'billable',
+                'b',
+                InputOption::VALUE_NONE,
+                'Mark time entry as billable'
+            )
+            ->addOption(
                 'description',
-                NULL,
+                'd',
                 InputOption::VALUE_REQUIRED,
                 'A brief description of this time entry'
             )
             ->addOption(
                 'duration',
-                NULL,
+                'l',
                 InputOption::VALUE_REQUIRED,
                 'Duration of time entry'
             )
             ->addOption(
                 'start',
-                NULL,
+                's',
                 InputOption::VALUE_REQUIRED,
                 'Start time of entry'
             )
             ->addOption(
                 'tag',
-                NULL,
+                't',
                 InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
                 'Time entry tags'
             )
@@ -50,6 +56,7 @@ class AddEntryCommand extends TogglCliBaseCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $project_id = $input->getArgument('project_id');
+        $billable = $input->getArgument('billable');
         $description = $input->getOption('description');
         $duration = $input->getOption('duration');
         $start = $input->getOption('start');
@@ -58,6 +65,7 @@ class AddEntryCommand extends TogglCliBaseCommand
         $toggl_client->createTimeEntry(array(
             'time_entry' => array(
                 'pid' => intval($project_id),
+                'billable' => $billable,
                 'description' => $description,
                 'created_with' => 'toggl-cli',
                 'duration' => intval($duration),
