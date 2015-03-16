@@ -52,8 +52,7 @@ class GetProjectsCommand extends TogglCliBaseCommand
                         if ($filter) {
                             if (preg_match("/$filter/i", $project['name'])) {
                                 $output_indicator = true;
-                                $project_name = $this->highlight($project['name'], $filter);
-                                $row = array($project['id'], $project_name);
+                                $row = array($project['id'], $project['name']);
                                 array_push($rows, $row);
                             }
                         } elseif ($project) {

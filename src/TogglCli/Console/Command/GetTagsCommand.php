@@ -55,8 +55,7 @@ class GetTagsCommand extends TogglCliBaseCommand
                         if ($filter) {
                             if (preg_match("/$filter/i", $tag['name'])) {
                                 $output_indicator = true;
-                                $row = array($this->highlight($tag['name'], $filter));
-                                array_push($rows, $row);
+                                array_push($rows, array($tag['name']));
                             }
                         } elseif ($tag) {
                             $output_indicator = true;

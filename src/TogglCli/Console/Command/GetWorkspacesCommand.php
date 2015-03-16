@@ -36,8 +36,7 @@ class GetWorkspacesCommand extends TogglCliBaseCommand
                 if ($filter) {
                     if (preg_match("/$filter/i", $workspace['name'])) {
                         $workspace_indicator = true;
-                        $string = $this->highlight($workspace['name'], $filter);
-                        $row = array($workspace['id'], $string);
+                        $row = array($workspace['id'], $workspace['name']);
                         array_push($rows, $row);
                     }
                 } elseif ($workspace) {
