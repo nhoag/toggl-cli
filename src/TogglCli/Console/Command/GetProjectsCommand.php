@@ -47,18 +47,27 @@ class GetProjectsCommand extends TogglCliBaseCommand
                 $projects = $toggl_client->getProjects(array('id' => $workspace['id']));
                 if (!empty($projects)) {
                     $projects_indicator = true;
+                    $rows = array();
                     foreach ($projects as $project) {
                         if ($filter) {
                             if (preg_match("/$filter/i", $project['name'])) {
                                 $output_indicator = true;
-                                $string = $this->highlight($project['name'], $filter);
-                                $output->writeln('<info>' . $project['id'] . '</info>' . ' - ' . $string);
+                                $project_name = $this->highlight($project['name'], $filter);
+                                $row = array($project['id'], $project_name);
+                                array_push($rows, $row);
                             }
                         } elseif ($project) {
                             $output_indicator = true;
-                            $output->writeln('<info>' . $project['id'] . '</info>' . ' - ' . $project['name']);
+                            $row = array($project['id'], $this->truncateString($project['name'], 56));
+                            array_push($rows, $row);
                         }
                     }
+                }
+                if (!empty($rows)) {
+                    $headers = array('Project ID', 'Project Name');
+                    $table = $this->tableBuilder($output, $headers, $rows);
+                    $output->writeln('<info>' . $workspace['name'] . '</info>');
+                    $table->render();
                 }
             }
             if (!$projects_indicator) {

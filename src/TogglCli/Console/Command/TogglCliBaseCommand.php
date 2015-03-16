@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Helper\Table;
 
 class TogglCliBaseCommand extends Command
 {
@@ -127,7 +128,7 @@ class TogglCliBaseCommand extends Command
         }
     }
 
-    protected function highlight($string, $hilite, $style = 'fg=white;bg=magenta')
+    public function highlight($string, $hilite, $style = 'fg=white;bg=magenta')
     {
         $regex = "/{$hilite}/i";
         preg_match_all($regex, $string, $matches);
@@ -155,5 +156,27 @@ class TogglCliBaseCommand extends Command
             }
         }
         return $rebuild;
+    }
+
+    public function tableBuilder($output, $headers, $rows)
+    {
+        $table = new Table($output);
+        $table
+          ->setHeaders($headers)
+          ->setRows($rows)
+        ;
+        return $table;
+    }
+
+    public function truncateString($name, $max_chars = 30)
+    {
+        $text_length = strlen($name);
+        if ($text_length > $max_chars) {
+            $replace_length = $text_length - $max_chars;
+            $replace_start = $text_length/2 - $replace_length/2;
+            return substr_replace($name, '<comment>...</comment>', $replace_start, $replace_length);
+        } else {
+            return $name;
+        }
     }
 }

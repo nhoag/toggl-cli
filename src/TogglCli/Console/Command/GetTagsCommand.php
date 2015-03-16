@@ -5,7 +5,6 @@ namespace TogglCli\Console\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use AJT\Toggl\TogglClient;
 
 class GetTagsCommand extends TogglCliBaseCommand
@@ -44,25 +43,31 @@ class GetTagsCommand extends TogglCliBaseCommand
         if (!empty($workspaces)) {
             $output_indicator = false;
             $tag_indicator = false;
-            foreach($workspaces as $workspace){
+            foreach ($workspaces as $workspace) {
                 $tags = $toggl_client->getWorkspaceTags(array('id' => $workspace['id']));
                 if (!empty($tags)) {
                     $tag_indicator = true;
                     usort($tags, function ($a, $b) {
                         return strcmp($a['name'], $b['name']);
                     });
-                    foreach($tags as $tag){
+                    $rows = array();
+                    foreach ($tags as $tag) {
                         if ($filter) {
                             if (preg_match("/$filter/i", $tag['name'])) {
                                 $output_indicator = true;
-                                $string = $this->highlight($tag['name'], $filter);
-                                $output->writeln($string);
+                                $row = array($this->highlight($tag['name'], $filter));
+                                array_push($rows, $row);
                             }
                         } elseif ($tag) {
                             $output_indicator = true;
-                            $output->writeln($tag['name']);
+                            array_push($rows, array($tag['name']));
                         }
                     }
+                }
+                if (!empty($rows)) {
+                    $headers = array($workspace['name']);
+                    $table = $this->tableBuilder($output, $headers, $rows);
+                    $table->render();
                 }
             }
             if (!$tag_indicator) {
