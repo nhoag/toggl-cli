@@ -56,21 +56,17 @@ class AddEntryCommand extends TogglCliBaseCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $project_id = $input->getArgument('project_id');
-        $billable = $input->getOption('billable');
-        $description = $input->getOption('description');
-        $duration = $input->getOption('duration');
-        $start = $input->getOption('start');
-        $tags = $input->getOption('tag');
+        $options = $input->getOptions();
         $toggl_client = TogglClient::factory(array('api_key' => $this->config['api_token']));
         $toggl_client->createTimeEntry(array(
             'time_entry' => array(
                 'pid' => intval($project_id),
-                'billable' => $billable,
-                'description' => $description,
+                'billable' => $options['billable'],
+                'description' => $options['description'],
                 'created_with' => 'toggl-cli',
-                'duration' => intval($duration),
-                'start' => $start,
-                'tags' => $tags
+                'duration' => intval($options['duration']),
+                'start' => $options['start'],
+                'tags' => $options['tag']
             )
         ));
     }
