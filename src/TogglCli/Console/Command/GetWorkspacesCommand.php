@@ -31,17 +31,25 @@ class GetWorkspacesCommand extends TogglCliBaseCommand
 
         if (!empty($workspaces)) {
             $workspace_indicator = false;
-            foreach($workspaces as $workspace) {
+            $rows = array();
+            foreach ($workspaces as $workspace) {
                 if ($filter) {
                     if (preg_match("/$filter/i", $workspace['name'])) {
                         $workspace_indicator = true;
                         $string = $this->highlight($workspace['name'], $filter);
-                        $output->writeln('<info>' . $workspace['id'] . '</info>' . ' - ' . $string);
+                        $row = array($workspace['id'], $string);
+                        array_push($rows, $row);
                     }
                 } elseif ($workspace) {
                     $workspace_indicator = true;
-                    $output->writeln('<info>' . $workspace['id'] . '</info>' . ' - ' . $workspace['name']);
+                    $row = array($workspace['id'], $workspace['name']);
+                    array_push($rows, $row);
                 }
+            }
+            if (!empty($rows)) {
+                $headers = array('Workspace ID', 'Workspace Name');
+                $table = $this->tableBuilder($output, $headers, $rows);
+                $table->render();
             }
             if (!$workspace_indicator) {
                 $output->writeln("<comment>No workspaces found with name '{$filter}'</comment>");
