@@ -27,6 +27,12 @@ class GetEntriesCommand extends TogglCliBaseCommand
                 'Specify end date-time'
             )
             ->addOption(
+                'expand',
+                'x',
+                InputOption::VALUE_NONE,
+                'Disable data truncation'
+            )
+            ->addOption(
                 'non_billable',
                 'i',
                 InputOption::VALUE_NONE,
@@ -68,11 +74,11 @@ class GetEntriesCommand extends TogglCliBaseCommand
             foreach ($workspaces as $workspace) {
                 $projects = $toggl_client->getProjects(array('id' => $workspace['id']));
                 if (!empty($projects)) {
-                    $ref = $this->refBuilder($projects);
+                    $ref = $this->refBuilder($projects, $options);
                     $entries = $this->entriesBuilder($toggl_client, $options);
                     if (!empty($entries)) {
-                        $headers = array('Project', 'Duration', 'Billable', 'Tags');
-                        $rows = $this->rowsBuilder($entries, $ref);
+                        $headers = array('Entry ID', 'Project', 'Time', '$', 'Tags');
+                        $rows = $this->rowsBuilder($entries, $ref, $options);
                         $table = $this->tableBuilder($output, $headers, $rows);
                         $output->writeln('<info>' . $workspace['name'] . '</info>');
                         $table->render();
@@ -131,29 +137,37 @@ class GetEntriesCommand extends TogglCliBaseCommand
         return $entries;
     }
 
-    protected function refBuilder($projects)
+    protected function refBuilder($projects, $options)
     {
         foreach ($projects as $project) {
-            $ref[$project['id']] = $this->truncateString($project['name']);
+            if ($options['expand']) {
+                $ref[$project['id']] = $project['name'];
+            } else {
+                $ref[$project['id']] = $this->truncateString($project['name'], 22, 'offset-left');
+            }
         }
         return $ref;
     }
 
-    protected function rowsBuilder($entries, $ref)
+    protected function rowsBuilder($entries, $ref, $options)
     {
         $rows = array();
         foreach ($entries as $entry) {
             $project = $ref[$entry['pid']];
-            array_push($rows, $this->rowBuilder($entry, $project));
+            array_push($rows, $this->rowBuilder($entry, $project, $options));
         }
         return $rows;
     }
 
-    protected function rowBuilder($entry, $project)
+    protected function rowBuilder($entry, $project, $options)
     {
-        $tags = implode(", ", $entry['tags']);
+        if ($options['expand']) {
+            $tags = implode(", ", $entry['tags']);
+        } else {
+            $tags = $this->truncateString(implode(", ", $entry['tags']), 22, 'right');
+        }
         $duration = gmdate("G:i", $entry['duration']);
         $bill = $entry['billable'] == 1 ? 'Y' : 'N';
-        return array($project, $duration, $bill, $tags);
+        return array($entry['id'], $project, $duration, $bill, $tags);
     }
 }

@@ -21,6 +21,12 @@ class GetProjectsCommand extends TogglCliBaseCommand
                 'Specify workspace ID'
             )
             ->addOption(
+                'expand',
+                'x',
+                InputOption::VALUE_NONE,
+                'Disable data truncation'
+            )
+            ->addOption(
                 'filter',
                 'f',
                 InputOption::VALUE_OPTIONAL,
@@ -33,6 +39,7 @@ class GetProjectsCommand extends TogglCliBaseCommand
     {
         $wid = $input->getOption('workspace_id');
         $filter = $input->getOption('filter');
+        $expand = $input->getOption('expand');
         $toggl_client = TogglClient::factory(array('api_key' => $this->config['api_token']));
         if ($wid) {
             $workspaces = $toggl_client->getWorkspaces(array($wid));
@@ -57,7 +64,11 @@ class GetProjectsCommand extends TogglCliBaseCommand
                             }
                         } elseif ($project) {
                             $output_indicator = true;
-                            $row = array($project['id'], $this->truncateString($project['name'], 56));
+                            if ($expand) {
+                                $row = array($project['id'], $project['name']);
+                            } else {
+                                $row = array($project['id'], $this->truncateString($project['name'], 56, 'offset-left'));
+                            }
                             array_push($rows, $row);
                         }
                     }

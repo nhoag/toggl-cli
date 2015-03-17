@@ -168,12 +168,20 @@ class TogglCliBaseCommand extends Command
         return $table;
     }
 
-    public function truncateString($name, $max_chars = 30)
+    public function truncateString($name, $max_chars = 30, $direction = 'center')
     {
         $text_length = strlen($name);
         if ($text_length > $max_chars) {
             $replace_length = $text_length - $max_chars;
-            $replace_start = $text_length/2 - $replace_length/2;
+            if ($direction == 'center') {
+                $replace_start = $text_length/2 - $replace_length/2;
+            } elseif ($direction == 'right') {
+                $replace_start = $text_length - $replace_length;
+            } elseif ($direction == 'left') {
+                $replace_start = 0;
+            } elseif ($direction == 'offset-left') {
+                $replace_start = $text_length/2.5 - $replace_length/2;
+            }
             return substr_replace($name, '<comment>...</comment>', $replace_start, $replace_length);
         } else {
             return $name;
