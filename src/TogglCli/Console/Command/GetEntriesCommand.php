@@ -77,7 +77,7 @@ class GetEntriesCommand extends TogglCliBaseCommand
                     $ref = $this->refBuilder($projects, $options);
                     $entries = $this->entriesBuilder($toggl_client, $options);
                     if (!empty($entries)) {
-                        $headers = array('Entry ID', 'Project', 'Time', '$', 'Tags');
+                        $headers = array('Date', 'Entry ID', 'Project', 'Time', '$', 'Tags');
                         $rows = $this->rowsBuilder($entries, $ref, $options);
                         $table = $this->tableBuilder($output, $headers, $rows);
                         $output->writeln('<info>' . $workspace['name'] . '</info>');
@@ -143,7 +143,7 @@ class GetEntriesCommand extends TogglCliBaseCommand
             if ($options['expand']) {
                 $ref[$project['id']] = $project['name'];
             } else {
-                $ref[$project['id']] = $this->truncateString($project['name'], 22, 'offset-left');
+                $ref[$project['id']] = $this->truncateString($project['name'], 20, 'offset-left');
             }
         }
         return $ref;
@@ -164,10 +164,11 @@ class GetEntriesCommand extends TogglCliBaseCommand
         if ($options['expand']) {
             $tags = implode(", ", $entry['tags']);
         } else {
-            $tags = $this->truncateString(implode(", ", $entry['tags']), 22, 'right');
+            $tags = $this->truncateString(implode(", ", $entry['tags']), 16, 'right');
         }
+        $date = date('Y-m-d', strtotime($entry['start']));
         $duration = gmdate("G:i", $entry['duration']);
         $bill = $entry['billable'] == 1 ? 'Y' : 'N';
-        return array($entry['id'], $project, $duration, $bill, $tags);
+        return array($date, $entry['id'], $project, $duration, $bill, $tags);
     }
 }
