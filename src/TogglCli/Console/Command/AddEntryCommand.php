@@ -18,7 +18,7 @@ class AddEntryCommand extends TogglCliBaseCommand
             ->addArgument(
                 'project_id',
                 InputArgument::REQUIRED,
-                'Name of entry'
+                'Project ID for entry'
             )
             ->addOption(
                 'billable',
@@ -48,7 +48,7 @@ class AddEntryCommand extends TogglCliBaseCommand
                 'tag',
                 't',
                 InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-                'Time entry tags'
+                'Time entry tag'
             )
         ;
     }
